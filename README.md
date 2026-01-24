@@ -1,4 +1,4 @@
-# Beam Ball for Nisa
+# Beam Ball Game for Nisa
 
 A high-performance physics-based balancing game built with React, featuring dual-control modes: visual hand tracking and real-time Simulink integration targeting biomechanical research.
 
