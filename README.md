@@ -1,6 +1,6 @@
 # Beam Ball for Nisa
 
-A high-performance physics-based balancing game built with React, featuring dual-control modes: visual hand tracking and real-time Simulink integration.
+A high-performance physics-based balancing game built with React, featuring dual-control modes: visual hand tracking and real-time Simulink integration targeting biomechanical research.
 
 ## 📝 Overview
 
@@ -88,14 +88,14 @@ Navigate to `http://localhost:3000` in your browser.
 
 ## 🎮 Controls
 
+### Simulink Mode (Default mode for scientific experiments)
+- Inputs are received as `Float32LE` values representing target Y-coordinates for both beam tips.
+- Toggle the **Control Source** switch in the System Diagnostics panel to try the Vision Mode where it tracks your hands on camera.
+
 ### Vision Mode (Camera)
 - Use your **Left Index Finger** to control the Left Tip of the beam.
 - Use your **Right Index Finger** to control the Right Tip of the beam.
 - Keep the beam leveled with an angle no more than 3.0° to increase your **Stability** score.
-
-### Simulink Mode
-- Toggle the **Control Source** switch in the System Diagnostics panel.
-- Inputs are received as `Float32LE` values representing target Y-coordinates for both beam tips.
 
 ---
 
