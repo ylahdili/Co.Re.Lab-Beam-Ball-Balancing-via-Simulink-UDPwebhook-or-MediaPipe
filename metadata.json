@@ -1,6 +1,6 @@
 {
   "name": "Beam Ball game for Nisa",
-  "description": "This game is ideally to be played by two players whose gamepads will be captured by Simulink, which process them according to certain learning paradigms, then sends the resulting two components as two tips force to command the beam. This game can be later extended to use Gemini 3 Flash as a strategic co-pilot (requires entering your GEMINI_API_KEY), analyzing the board and suggesting the best strategies for balancing the ball",
+  "description": "This game is ideally to be played by two players whose gamepads will be captured by Simulink, which processes them according to certain learning paradigms, then sends the resulting two components as two tips force to command the beam. This game can be later extended to use Gemini 3 Flash as a strategic co-pilot (requires entering your GEMINI_API_KEY), analyzing the board and suggesting the best strategies for balancing the ball",
   "requestFramePermissions": [
     "camera"
   ]
