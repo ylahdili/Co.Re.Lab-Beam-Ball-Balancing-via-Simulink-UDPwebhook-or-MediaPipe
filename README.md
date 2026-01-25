@@ -55,11 +55,25 @@ Open the game (online or local), toggle **Control Source** to `SIMULINK` in the 
 
 ## 🏗️ Architecture
 
+The game utilizes a low-latency bridge to connect the web-based UI with the Simulink environments.
+
+```mermaid
+graph LR
+    subgraph "Frontend Layer (Browser)"
+        A[React UI / Vite] <--> B[useSimulink Hook]
+    end
+
+    subgraph "Bridge Layer (Node.js)"
+        C[WebSocket Server] <--> D[UDP Client]
+    end
+
+    subgraph "External Control"
+        E[Simulink Model]
+    end
+
+    B <--"WebSocket (JSON)"--> C
+    D <--"UDP (Bytes pkts)"--> E
 ```
-┌─────────────┐      WebSocket       ┌─────────────┐       UDP        ┌─────────────┐
-│   Browser   │ ◄──────────────────► │  bridge.js  │ ◄──────────────► │  Simulink   │
-│ (React App) │      JSON msgs       │  (Node.js)  │    Binary pkts   │   Model     │
-└─────────────┘                      └─────────────┘                  └─────────────┘
 
 - **Telemetry (Game → Simulink):** 21-byte packet @ 10Hz — Score, Health, Ball XY, Left Y and Right Y Beam tips positions, Game State
 - **Control (Simulink → Game):** 9-byte packet @60Hz (i.e. the physics engine fps) — Left Y, Right Y, Start command Trigger
@@ -81,6 +95,7 @@ This flexible architecture and documented code lends itself very well to be expa
 ## 🧪 Debugging Tools (Optional)
 
 If you need to verify the bridge is working:
+
 ```bash
 # Simulate Simulink sending control signals
 curl -O https://raw.githubusercontent.com/.../simulinkBridge/test_sender.js && node test_sender.js
