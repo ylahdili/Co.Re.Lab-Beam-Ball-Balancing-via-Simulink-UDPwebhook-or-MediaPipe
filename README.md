@@ -1,6 +1,6 @@
 # Beam Ball Game 🎮
 
-A physics-based balancing game with dual-control modes: **hand tracking** via webcam or **external control** via Simulink integration for biomechanical research.
+A high-performance physics-based balancing game built in React with dual-control modes: **hand tracking** via webcam or **external control** via Simulink integration for **biomechanical research** and **shared control** for gauging human motor dexterity and machine interaction.
 
 ---
 
@@ -38,7 +38,7 @@ node bridge.js
 The Simulink model is provided on request. Contact the repository maintainer for access.
 
 ### Step 3: Play
-Open the game (online or local), toggle **Control Source** to `SIMULINK` in the side panel, and start your Simulink model.
+Open the game (online or local), toggle **Control Source** to `SIMULINK` in the side panel, and start your Simulink model, or to `CAMERA` to use hand tracking for tilting both ends of the beam, making sure your both hands are visible to the camera.
 
 ---
 
@@ -60,10 +60,11 @@ Open the game (online or local), toggle **Control Source** to `SIMULINK` in the 
 │   Browser   │ ◄──────────────────► │  bridge.js  │ ◄──────────────► │  Simulink   │
 │ (React App) │      JSON msgs       │  (Node.js)  │    Binary pkts   │   Model     │
 └─────────────┘                      └─────────────┘                  └─────────────┘
-```
 
-- **Telemetry (Game → Simulink):** 21-byte packet @ 10Hz — Score, Health, Ball XY, Beam tips, State
-- **Control (Simulink → Game):** 9-byte packet — Left Y, Right Y, Start command
+- **Telemetry (Game → Simulink):** 21-byte packet @ 10Hz — Score, Health, Ball XY, Left Y and Right Y Beam tips positions, Game State
+- **Control (Simulink → Game):** 9-byte packet @60Hz (i.e. the physics engine fps) — Left Y, Right Y, Start command Trigger
+
+This flexible architecture and documented code lends itself very well to be expanded to other byte-sized quantities.
 
 ---
 
