@@ -81,7 +81,7 @@ node simulinkBridge/bridge.js
 
 #### Cloudflare Pages (Recommended for Production)
 The game is optimized for Cloudflare Pages.
-1. Connect this repository to your Cloudflare dashboard.
+1. Connect this repository to your Cloudflare Pages dashboard.
 2. Build Command: `npm run build`
 3. Build Output Directory: `dist`
 
