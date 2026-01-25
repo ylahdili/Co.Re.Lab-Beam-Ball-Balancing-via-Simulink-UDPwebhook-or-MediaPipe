@@ -53,7 +53,7 @@ Open the game (online or local), toggle **Control Source** to `SIMULINK` in the 
 
 ---
 
-## �️ Architecture
+## 🏗️ Architecture
 
 ```
 ┌─────────────┐      WebSocket       ┌─────────────┐       UDP        ┌─────────────┐
