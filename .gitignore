@@ -16,6 +16,7 @@ dist-ssr
 
 # Modern Build/Cache
 .vite/
+.wrangler/
 simulinkBridge/node_modules/
 
 # Editor directories and files

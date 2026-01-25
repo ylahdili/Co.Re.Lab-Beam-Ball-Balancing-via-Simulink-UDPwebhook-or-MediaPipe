@@ -26,7 +26,7 @@ const DEFAULT_CONFIG = {
   MAX_BEAM_IMPULSE: 8       // Cap momentum transfer from jerky hand movements
 };
 
-const GAME_DURATION = 60; // 60 Seconds (1 minute)
+const DEFAULT_GAME_DURATION = 60; // Default 60 seconds (1 minute)
 
 const BeamBall: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -76,6 +76,8 @@ const BeamBall: React.FC = () => {
   const [config, setConfig] = useState({ ...DEFAULT_CONFIG });
   const [timerMode, setTimerMode] = useState<'countdown' | 'countup'>('countdown');
   const [displayTime, setDisplayTime] = useState(0);
+  const [gameDuration, setGameDuration] = useState(DEFAULT_GAME_DURATION);
+  const gameDurationRef = useRef(DEFAULT_GAME_DURATION);
 
   /**
    * Resets ball to the center of the screen above the beam
@@ -399,7 +401,7 @@ const BeamBall: React.FC = () => {
       // We'll update the displayTime state outside/throttled if needed.
       // For now, let's allow the renderLoop to just update logic.
 
-      if (gameTimeRef.current >= GAME_DURATION) {
+      if (gameTimeRef.current >= gameDurationRef.current) {
         gameStateRef.current = 'finished';
         setGameState('finished');
       }
@@ -599,9 +601,9 @@ const BeamBall: React.FC = () => {
         )}
 
         {/* --- Top HUD Metrics --- */}
-        <div className="absolute top-6 left-6 z-40 flex flex-col gap-3">
+        <div className="absolute top-4 left-4 z-40 flex flex-col gap-3">
           <div className="flex gap-3">
-            <div className="bg-[#1e1e1e]/90 p-4 rounded-2xl border border-[#444746] backdrop-blur shadow-xl flex items-center gap-4">
+            <div className="bg-[#1e1e1e]/90 pt-3 pl-3 pb-3 pr-2 rounded-2xl border border-[#444746] backdrop-blur shadow-xl flex items-center gap-2.5 min-w-[135px]">
               <div className="bg-[#42a5f5]/20 p-2 rounded-full"><TrendingUp className="w-6 h-6 text-[#42a5f5]" /></div>
               <div>
                 <p className="text-[10px] text-[#c4c7c5] uppercase font-bold tracking-widest">Stability</p>
@@ -609,7 +611,7 @@ const BeamBall: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-[#1e1e1e]/90 p-4 rounded-2xl border border-[#444746] backdrop-blur shadow-xl flex items-center gap-4 min-w-[160px]">
+            <div className="bg-[#1e1e1e]/90 pt-3 pl-3 pb-3 pr-2 rounded-2xl border border-[#444746] backdrop-blur shadow-xl flex items-center gap-2.5 min-w-[135px]">
               <div className={`p-2 rounded-full transition-colors ${health < 40 ? 'bg-red-500/20' : 'bg-green-500/20'}`}>
                 <Heart className={`w-6 h-6 ${health < 40 ? 'text-red-500 animate-pulse' : 'text-green-500'}`} />
               </div>
@@ -621,8 +623,8 @@ const BeamBall: React.FC = () => {
           </div>
 
           {/* --- Beam Tilt Visualization --- */}
-          <div className="bg-[#1e1e1e]/90 p-4 rounded-2xl border border-[#444746] backdrop-blur shadow-xl">
-            <p className="text-[10px] text-[#c4c7c5] uppercase font-bold tracking-widest mb-2">Beam Angle</p>
+          <div className="bg-[#1e1e1e]/90 pt-3 pl-3 pb-3 pr-2 rounded-2xl border border-[#444746] backdrop-blur shadow-xl">
+            <p className="text-[10px] text-[#c4c7c5] uppercase font-bold tracking-widest mb-1">Beam Angle</p>
             <div className="flex items-center gap-2">
               <div className="flex-1 h-2 bg-black/40 rounded-full overflow-hidden">
                 <div
@@ -637,15 +639,24 @@ const BeamBall: React.FC = () => {
         </div>
 
         {/* --- TIMER HUD --- */}
-        <div className="absolute top-6 right-6 z-40 bg-[#1e1e1e]/90 p-4 rounded-2xl border border-[#444746] backdrop-blur shadow-xl flex items-center gap-4">
+        <div className="absolute top-4 right-4 z-[70] bg-[#1e1e1e]/90 pt-3 pl-2 pb-3 pr-2 rounded-2xl border border-[#444746] backdrop-blur shadow-xl flex items-center gap-2.5 min-w-[135px]">
           <div onClick={() => setTimerMode(m => m === 'countdown' ? 'countup' : 'countdown')} className="cursor-pointer bg-[#42a5f5]/20 p-2 rounded-full hover:bg-[#42a5f5]/30 transition-colors">
             <Clock className="w-6 h-6 text-[#42a5f5]" />
           </div>
           <div>
-            <p className="text-[10px] text-[#c4c7c5] uppercase font-bold tracking-widest">Time {timerMode === 'countdown' ? 'Left' : 'Elapsed'}</p>
+            <p className="text-[10px] text-[#c4c7c5] uppercase font-bold tracking-widest">
+              {gameState === 'playing' ? (timerMode === 'countdown' ? 'Time Left' : 'Elapsed') : 'Duration'}
+            </p>
             <p className="text-2xl font-bold font-mono">
               {(() => {
-                const t = timerMode === 'countdown' ? Math.max(0, GAME_DURATION - displayTime) : displayTime;
+                // When not playing, show the set duration
+                if (gameState !== 'playing') {
+                  const m = Math.floor(gameDuration / 60);
+                  const s = gameDuration % 60;
+                  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+                // When playing, show countdown or elapsed
+                const t = timerMode === 'countdown' ? Math.max(0, gameDuration - displayTime) : displayTime;
                 const m = Math.floor(t / 60);
                 const s = Math.floor(t % 60);
                 return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
@@ -701,7 +712,7 @@ const BeamBall: React.FC = () => {
 
       {/* --- Side Panel: System Diagnostics --- */}
       <div className="w-[380px] bg-[#1e1e1e] border-l border-[#444746] flex flex-col h-full shadow-2xl">
-        <div className="p-6 border-b-4 border-gray-600 bg-[#252525]">
+        <div className="pt-6 px-6 pb-3 border-b-4 border-gray-600 bg-[#252525]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Activity className="w-5 h-5 text-gray-400" />
@@ -720,12 +731,31 @@ const BeamBall: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4">
           {/* CONFIGURATION PANEL */}
           <div className="bg-[#121212] p-4 rounded-xl border border-[#444746] space-y-4">
-            <div className="flex items-center justify-between mb-2">
+            <div className={`flex items-center justify-between mb-2 ${gameState === 'playing' ? 'opacity-40' : ''}`}>
               <div className="flex items-center gap-2 text-xs font-bold text-[#c4c7c5] uppercase tracking-wider">
                 <Sliders className="w-3 h-3" /> Configuration
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  min={30}
+                  max={600}
+                  step={30}
+                  value={gameDuration}
+                  disabled={gameState === 'playing'}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    setGameDuration(val);
+                    gameDurationRef.current = val;
+                  }}
+                  className="w-20 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#42a5f5] disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <span className="text-[10px] font-mono text-gray-400 w-12">
+                  {`${Math.floor(gameDuration / 60)}:${(gameDuration % 60).toString().padStart(2, '0')}`}
+                </span>
               </div>
             </div>
 
@@ -779,7 +809,7 @@ const BeamBall: React.FC = () => {
           </div>
 
           {/* DEBUG FLAGS SECTION */}
-          <div className="space-y-2">
+          <div className="space-y-2 mt-[22px]">
             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Active System Flags</p>
             {showFallFlag && (
               <div className="bg-[#ef5350]/10 border border-[#ef5350]/30 p-3 rounded-xl flex items-center gap-3 animate-pulse">
@@ -810,19 +840,19 @@ const BeamBall: React.FC = () => {
             )}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 mt-[20px]">
             <div className="flex items-center gap-2 text-xs font-bold text-[#c4c7c5] uppercase tracking-wider">
               <Terminal className="w-3 h-3" /> Raw Console
             </div>
             <div className="bg-[#121212] p-3 rounded-xl border border-[#444746] font-mono text-[10px] text-blue-400/60 leading-normal break-all max-h-40 overflow-y-auto">
               [SYSTEM]: Physics engine running at 60fps...<br />
-              [SYSTEM]: Hand tracking in Control Source: Camera
+              [SYSTEM]: Show your hands when Control Source: Camera
             </div>
           </div>
 
         </div>
 
-        <div className="p-4 text-center border-t border-[#444746]">
+        <div className="p-3 text-center border-t border-[#444746]">
           <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Nisa Build v4.2 (Verified Documentation)</p>
         </div>
       </div>

@@ -78,6 +78,19 @@ node simulinkBridge/bridge.js
 *Note: Ensure your Simulink model is configured to listen on port 3000 and send on port 3001.*
 
 ### Step 2: Launch the Game
+
+#### Cloudflare Pages (Recommended for Production)
+The game is optimized for Cloudflare Pages.
+1. Connect this repository to your Cloudflare dashboard.
+2. Build Command: `npm run build`
+3. Build Output Directory: `dist`
+
+Alternatively, deploy via CLI:
+```bash
+npm run deploy:cloudflare
+```
+
+#### Local Development
 In a separate terminal, start the development server:
 ```bash
 npm run dev

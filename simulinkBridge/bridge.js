@@ -48,11 +48,11 @@ udpClient.on('message', (msg) => {
 
 wss.on('connection', (ws) => {
     activeWs = ws;
-    console.log('React client connected');
+    // console.log('React client connected');
 
     ws.on('close', () => {
         if (activeWs === ws) activeWs = null;
-        console.log('React client disconnected');
+        // console.log('React client disconnected');
     });
 
     // 1. React -> Simulink (Telemetry)
