@@ -17,7 +17,7 @@ cd Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe
 npm install
 npm run dev
 ```
-Then open `http://localhost:3000` in your browser.
+Then open `http://localhost:3000` in your browser, to launch the game.
 
 ---
 
@@ -28,8 +28,8 @@ To control the game from a Simulink model, you need to run a local bridge that t
 ### Step 1: Download & Run the Bridge
 ```bash
 mkdir simulink-bridge && cd simulink-bridge
-curl -O https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/bridge.js
-curl -O https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/package.json
+wget "https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/bridge.js" -O "bridge.js"
+wget "https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/package.json" -O "package.json"
 npm install
 node bridge.js
 ```
@@ -39,7 +39,7 @@ node bridge.js
 The Simulink model is provided on request. Contact the repository maintainer for access.
 
 ### Step 3: Play
-Open the game (online or local), toggle **Control Source** to `SIMULINK` in the side panel, and start your Simulink model, or to `CAMERA` to use hand tracking for tilting both ends of the beam, making sure your both hands are visible to the camera.
+Open the game (online or local), toggle **Control Source** to `SIMULINK` in the side panel, and start your Simulink model, or toggle to `CAMERA` to use hand tracking for tilting both ends of the beam, then make sure both your hands are visible to the camera.
 
 ---
 
@@ -56,28 +56,28 @@ Open the game (online or local), toggle **Control Source** to `SIMULINK` in the 
 
 ## 🏗️ Architecture
 
-The game utilizes a low-latency bridge to connect the web-based UI with the Simulink environments.
+The game utilizes a low-latency bridge to connect the web-based game UI with the Simulink environments.
 
 ```mermaid
 graph LR
     subgraph "Frontend Layer (Browser)"
-        A[React UI / Vite] <--> B[useSimulink Hook]
+        A[React UI<br/>/ Vite] <--> B[useSimulink<br/>Hook]
     end
 
     subgraph "Bridge Layer (Node.js)"
-        C[WebSocket Server] <--> D[UDP Client]
+        C[WebSocket<br/>Server] <--> D[UDP<br/>Client]
     end
 
     subgraph "External Control"
-        E[Simulink Model]
+        E[Simulink<br/>Model]
     end
 
     B <--"WebSocket<br/>(JSON)"--> C
     D <--"UDP<br/>(Bytes pkts)"--> E
 ```
 
-- **Telemetry (Game → Simulink):** 21-byte packet @ 10Hz — Score, Health, Ball XY, Left Y and Right Y Beam tips positions, Game State
-- **Control (Simulink → Game):** 9-byte packet @60Hz (i.e. the physics engine fps) — Left Y, Right Y, Start command Trigger
+- **Telemetry (Game → Simulink):** 21-byte packet @10Hz — Score, Health, Ball XY, Left Y and Right Y Beam tips positions, Game State
+- **Control (Simulink → Game):** 9-byte packet @60Hz (*i.e. the physics engine fps*) — Left Y, Right Y, Start command Trigger
 
 This flexible architecture and documented code lends itself very well to be expanded to other byte-sized quantities.
 
@@ -88,7 +88,7 @@ This flexible architecture and documented code lends itself very well to be expa
 | Layer | Technology |
 |-------|------------|
 | Frontend | React 19, Vite, Tailwind CSS, Canvas 2D |
-| Hand Tracking | MediaPipe Hands (Lite) |
+| Hand Tracking | MediaPipe Hands (*Lite for Performance*) |
 | Bridge | Node.js, WebSocket (`ws`), UDP (`dgram`) |
 
 ---
@@ -99,10 +99,12 @@ If you need to verify the bridge is working:
 
 ```bash
 # Simulate Simulink sending control signals
-curl -O https://raw.githubusercontent.com/.../simulinkBridge/test_sender.js && node test_sender.js
+wget "https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/test_sender.js" -O "test_sender.js"
+node test_sender.js
 
 # Listen for telemetry from the game
-curl -O https://raw.githubusercontent.com/.../simulinkBridge/test_receiver.js && node test_receiver.js
+wget "https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/test_receiver.js" -O "test_receiver.js"
+node test_receiver.js
 ```
 
 ---
