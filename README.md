@@ -86,6 +86,41 @@ Navigate to `http://localhost:3000` in your browser.
 
 ---
 
+## 🔌 Standalone Bridge Setup (Simulink-Only Users)
+
+If you only need to control the **online hosted game** from your local Simulink model, you don't need to clone the entire repository. Just download the bridge files:
+
+### Quick Setup
+
+1. **Create a folder and download the required files:**
+   ```bash
+   mkdir simulink-bridge && cd simulink-bridge
+   wget https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/bridge.js
+   wget https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/package.json
+   ```
+
+2. **Install dependencies and run:**
+   ```bash
+   npm install
+   node bridge.js
+   ```
+
+3. **Open the online game** in your browser and switch to **Simulink Mode** in the Control Source panel.
+
+### 🧪 Optional: Debugging Tools
+
+If you suspect the bridge is not working properly and want to verify data transmission between the online React game and your local machine, you can download these testing utilities:
+
+```bash
+wget https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/test_sender.js
+wget https://raw.githubusercontent.com/ylahdili/Co.Re.Lab-Beam-Ball-Balancing-via-Simulink-UDPwebhook-or-MediaPipe/main/simulinkBridge/test_receiver.js
+```
+
+- **`test_sender.js`**: Simulates Simulink sending control signals to the bridge.
+- **`test_receiver.js`**: Listens for telemetry data coming from the game via the bridge.
+
+---
+
 ## 🎮 Controls
 
 ### Simulink Mode (Default mode for scientific experiments)

@@ -20,7 +20,41 @@ console.log(`Bridge Running: WS:${WS_PORT} <-> UDP:${SIM_PORT_IN}/${SIM_PORT_OUT
 // Bind UDP to listen for control signals from Simulink
 udpClient.bind(SIM_PORT_OUT);
 
+// Track active WebSocket client (prevents adding duplicate UDP listeners on reconnect)
+let activeWs = null;
+
+// 2. Simulink -> React (Control)
+// UDP listener added ONCE at module level - fixes MaxListenersExceededWarning
+udpClient.on('message', (msg) => {
+    try {
+        // Expected packet size: 9 bytes
+        // [0-3] Right Y Target (Float32)
+        // [4-7] Left Y Target (Float32)
+        // [8]   Command (UInt8): 1 = Start Game
+        if (msg.length >= 9 && activeWs && activeWs.readyState === activeWs.OPEN) {
+            const controlData = {
+                ry: msg.readFloatLE(0), // Right Y Force/Pos
+                ly: msg.readFloatLE(4), // Left Y Force/Pos
+                start: msg.readUInt8(8) === 1 // Trigger to Start
+            };
+
+            // Send efficient JSON key-value pairs to React
+            activeWs.send(JSON.stringify(controlData));
+        }
+    } catch (e) {
+        console.error('Error parsing control signal:', e);
+    }
+});
+
 wss.on('connection', (ws) => {
+    activeWs = ws;
+    console.log('React client connected');
+
+    ws.on('close', () => {
+        if (activeWs === ws) activeWs = null;
+        console.log('React client disconnected');
+    });
+
     // 1. React -> Simulink (Telemetry)
     // Incoming JSON from React (via WebSocket)
     ws.on('message', (msg) => {
@@ -56,31 +90,6 @@ wss.on('connection', (ws) => {
             udpClient.send(telemetryBuf, SIM_PORT_IN, SIM_HOST);
         } catch (e) {
             console.error('Error parsing telemetry:', e);
-        }
-    });
-
-    // 2. Simulink -> React (Control)
-    // Incoming UDP bytes from Simulink
-    udpClient.on('message', (msg) => {
-        try {
-            // Expected packet size: 9 bytes
-            // [0-3] Right Y Target (Float32)
-            // [4-7] Left Y Target (Float32)
-            // [8]   Command (UInt8): 1 = Start Game
-            if (msg.length >= 9) {
-                const controlData = {
-                    ry: msg.readFloatLE(0), // Right Y Force/Pos
-                    ly: msg.readFloatLE(4), // Left Y Force/Pos
-                    start: msg.readUInt8(8) === 1 // Trigger to Start
-                };
-
-                // Send efficient JSON key-value pairs to React
-                if (ws.readyState === ws.OPEN) {
-                    ws.send(JSON.stringify(controlData));
-                }
-            }
-        } catch (e) {
-            console.error('Error parsing control signal:', e);
         }
     });
 });
