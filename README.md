@@ -1,12 +1,13 @@
 # Beam Ball Game 🎮
 
-A high-performance physics-based balancing game built in React with dual-control modes: **hand tracking** via webcam or **external control** via Simulink integration for **biomechanical research** and **shared control** for gauging human motor dexterity and machine interaction.
+A high-performance physics-based balancing game built in React with dual-control modes: **hand tracking** via webcam or **external control** via Simulink integration for **biomechanical research** and **shared control** for examining human motor dexterity and machine interaction.
 
 ---
 
 ## ▶️ Quick Start
 
 **Option A — Play Online Now**  
+
 👉 Open [beamball.surge.sh](https://beamball.surge.sh) in your browser and start playing with hand tracking immediately.
 
 **Option B — Local Development**  
@@ -71,8 +72,8 @@ graph LR
         E[Simulink Model]
     end
 
-    B <--"WebSocket (JSON)"--> C
-    D <--"UDP (Bytes pkts)"--> E
+    B <--"WebSocket<br/>(JSON)"--> C
+    D <--"UDP<br/>(Bytes pkts)"--> E
 ```
 
 - **Telemetry (Game → Simulink):** 21-byte packet @ 10Hz — Score, Health, Ball XY, Left Y and Right Y Beam tips positions, Game State
