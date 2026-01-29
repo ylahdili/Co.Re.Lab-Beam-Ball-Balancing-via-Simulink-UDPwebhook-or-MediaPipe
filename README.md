@@ -8,7 +8,7 @@ A high-performance physics-based balancing game built in React with dual-control
 
 **Option A — Play Online Now**  
 
-👉 Open [beamball.surge.sh](https://beamball.surge.sh) in your browser and start playing with hand tracking immediately.
+👉 Open [beamball.surge.sh](https://beamball.surge.sh) or [beamball.pages.dev](https://beamball.pages.dev) in your browser and start playing with hand tracking immediately.
 
 **Option B — Local Development**  
 ```bash
